@@ -1,0 +1,82 @@
+{
+  "updated": "2026-07-06T14:07:02+01:00",
+  "prototypes": [
+    {
+      "name": "foldup",
+      "type": "game",
+      "status": "v0",
+      "last_advanced": "2026-07-06T14:07:02+01:00",
+      "one_liner": "Fully-offline, ad-free single-HTML-file grid puzzle whose only verb is FOLD: crease the board along any grid line and the smaller half folds over onto the larger, combining overlapping cells by XOR (lit+empty stays lit; lit+lit cancels). The board shrinks each fold; match a target pattern in as few folds as par. Pure DOM-free core (combine/fold/checkWin/solveMinFolds) with an 8-level BFS-certified bank under a thin canvas shell — flip animation, crease gutters, folds-vs-par HUD, win overlay. Opens straight from disk (file://).",
+      "next_step": "Confirm the fold feel in a real browser at file:// (flip animation, gutter-click legibility, the merge/collapse moment) to graduate v0→v1 — blocked this heartbeat only by Chrome remote-debugging authorization; then a level-select / next-level flow and more levels.",
+      "demo": null,
+      "entry": "foldup.html",
+      "report": "2026-07-06T1407-foldup.html"
+    },
+    {
+      "name": "sediment",
+      "type": "app",
+      "status": "v1",
+      "last_advanced": "2026-07-06T04:06:37+01:00",
+      "one_liner": "Your junk folder, replayed as a life-diary: reads a folder's file metadata only (os.stat — never file contents) and renders it as titled, chaptered era blocks with date spans, headline files, one-line auto-captions ('12 PDFs and a .zip over 4 days — looks like a tax filing'), and a month activity sparkline. Fully local, stdlib only, read-only, deterministic.",
+      "next_step": "A --json machine-readable diary, a richer per-era detail view (top file types, size histogram) still metadata-only, or a 'quiet gaps' annotation between eras (toward polish).",
+      "demo": "./run.sh examples/sample/",
+      "entry": null,
+      "report": "2026-07-06T0406-sediment.html"
+    },
+    {
+      "name": "tidy",
+      "type": "app",
+      "status": "v1",
+      "last_advanced": "2026-07-06T08:06:45+01:00",
+      "one_liner": "Safe, reversible file organizer: sorts loose Downloads/Desktop files into category subfolders — dry-run by default, never overwrites, every apply undoable. --undo --list is a read-only view of the undo stack (applies newest-first: ordinal, UTC timestamp, moved-file count, --by-month flag, next-to-undo marked; a corrupt manifest degrades to an inline note, still exits 0). Optional untrusted-validated JSON config for custom rules; --json plans for piping.",
+      "next_step": "--undo --list --json (machine-readable undo history for piping), config-driven category ordering, or an interactive per-category confirm before applying (toward polish).",
+      "demo": "./run.sh examples/sample",
+      "entry": null,
+      "report": "2026-07-06T0806-tidy.html"
+    },
+    {
+      "name": "subscription-sleuth",
+      "type": "app",
+      "status": "v1",
+      "last_advanced": "2026-07-06T06:06:43+01:00",
+      "one_liner": "Finds recurring charges in a plain bank/card CSV fully locally — cadence detection, annualized run-rate, next-due projection, and price-change detection (a merchant's same-cadence charges stay ONE line even when the price steps; names the exact date it stepped up/down, old→new, % delta, annualized impact). No bank link, no accounts.",
+      "next_step": "--json output, per-cluster confidence score, or free-trial-to-paid ($0→paid) detection (toward polish).",
+      "demo": "./run.sh",
+      "entry": null,
+      "report": "2026-07-06T0606-subscription-sleuth.html"
+    },
+    {
+      "name": "groupline",
+      "type": "game",
+      "status": "polish",
+      "last_advanced": "2026-07-06T10:06:53+01:00",
+      "one_liner": "Fully-offline, ad-free Connections-style word puzzle: 16 words, 4 hidden groups, 30 curated puzzles with overlap-bait, picker board, emoji share grid — no lockouts, no network.",
+      "next_step": "Mistakes indicator, difficulty filtering, or a daily-seed selector (deeper polish).",
+      "demo": null,
+      "entry": "index.html",
+      "report": "2026-07-06T1006-groupline.html"
+    },
+    {
+      "name": "settleup",
+      "type": "app",
+      "status": "v1",
+      "last_advanced": "2026-07-06T02:06:10+01:00",
+      "one_liner": "Splitwise-free expense splitter: reads a plain JSON ledger, prints exact per-person balances (integer cents, never float) and a near-minimal who-pays-whom plan; an opt-in --breakdown / -b per-person view itemizes every share you owe (equal/weighted) and every expense you paid, reconciling to the penny against the balance table.",
+      "next_step": "--json output, an add/edit CLI that writes back, or multi-currency (toward polish).",
+      "demo": "./run.sh --breakdown",
+      "entry": null,
+      "report": "2026-07-06T0206-settleup.html"
+    },
+    {
+      "name": "chainfall",
+      "type": "game",
+      "status": "v1",
+      "last_advanced": "2026-07-05T22:06:41+01:00",
+      "one_liner": "Fully-offline Drop7 revival: drop numbered discs into a 7×7 grid, clears cascade as a visible stepped animation with the exact escalating chain score; on-canvas HUD, game-over/restart overlay; blanks crack and reveal, a rising floor forces the pace.",
+      "next_step": "Toward polish: best-score memory (localStorage), an inline data: URI favicon (kills the /favicon.ico 404; percent-encode the SVG namespace per rule-14 corollary), and a rising-floor danger warning.",
+      "demo": null,
+      "entry": "chainfall.html",
+      "report": "2026-07-05T2206-chainfall.html"
+    }
+  ]
+}
