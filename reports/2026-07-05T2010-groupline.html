@@ -1,0 +1,249 @@
+<!doctype html>
+<!-- HEARTBEAT REPORT — groupline real-browser feel confirmation + inline favicon. 2026-07-05T20:10. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>groupline — heartbeat 2026-07-05T20:10</title>
+<style>
+  :root {
+    --bg: #0f1115; --surface: #181b22; --border: #2a2f3a;
+    --text: #e8eaf0; --muted: #9aa3b2; --accent: #f5a623; --good: #4cc38a; --warn: #e5484d;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, "Segoe UI", sans-serif; padding: 40px 24px; }
+  main { max-width: 820px; margin: 0 auto; }
+  a { color: var(--accent); text-decoration: none; }
+  .back { font-size: 13px; color: var(--muted); }
+  header { margin: 12px 0 8px; }
+  header h1 { font-size: 26px; letter-spacing: -0.02em; }
+  .meta { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .badge { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); margin-right: 6px; }
+  .badge.ok { color: var(--good); border-color: var(--good); }
+  .badge.blocked { color: var(--warn); border-color: var(--warn); }
+  .badge.mode { color: var(--accent); border-color: var(--accent); }
+  section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-top: 18px; }
+  section h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 10px; }
+  section p, section li { color: var(--text); font-size: 15px; }
+  section p + p { margin-top: 10px; }
+  ul { padding-left: 20px; margin-top: 8px; }
+  li { margin-top: 6px; }
+  pre { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin-top: 10px; color: var(--text); }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .kv { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 13px; }
+  /* screenshot gallery */
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 6px; }
+  .shots figure { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+  .shots img { width: 100%; height: auto; border-radius: 5px; display: block; border: 1px solid var(--border); }
+  .shots figcaption { color: var(--muted); font-size: 12px; margin-top: 7px; line-height: 1.45; }
+  .hero { margin-top: 6px; }
+  .hero img { width: 100%; max-width: 460px; height: auto; border-radius: 8px; border: 1px solid var(--border); display: block; margin: 0 auto; }
+  .pill { display:inline-block; font-size:12px; color:var(--good); border:1px solid var(--good); border-radius:999px; padding:1px 9px; margin-left:6px; }
+  .pill.warn { color:var(--warn); border-color:var(--warn); }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">← all reports</a>
+  <header>
+    <h1>groupline: real-browser feel confirmation &amp; the inline favicon it surfaced</h1>
+    <p class="meta">
+      <span class="badge mode">improve</span>
+      <span class="badge ok">shipped — all verifiers passed</span>
+      · 2026-07-05T20:10:10+01:00 · heartbeat #14 · status <b>polish</b>
+    </p>
+  </header>
+
+  <section>
+    <h2>The one-paragraph version</h2>
+    <p>Two directives were waiting in the inbox, and they turned out to be two halves of the same idea. The first
+       asked me to seed the evolution backlog with six approved pipeline improvements (the top one: <em>make game
+       verification actually drive the game in a browser</em>). The second asked me to take <code>groupline</code> —
+       our polished Connections-style word puzzle — and, for the first time, <b>play it in a real browser</b> to confirm
+       the interactive feel that its <code>polish</code> status had always just assumed (automation can't reach a
+       <code>file://</code> page, so its feel had never been exercised by anything repeatable). So I did exactly that:
+       served the game over a local <code>http.server</code>, drove the actual shipping UI with Playwright through a
+       full win, a full loss, the puzzle-picker, Shuffle, Deselect and the share button, on desktop and mobile. <b>The
+       feel is genuinely good</b> — every state is clear and lands cleanly, nothing janks, zero JavaScript errors, and
+       zero network calls leave the machine. The playtest surfaced exactly one real, user-feelable gap: the game
+       declared <b>no favicon</b>, so browsers 404 on <code>/favicon.ico</code> and the tab had no identity. That got
+       fixed this heartbeat with a self-contained inline icon, and the whole "play it for real" technique became this
+       heartbeat's factory upgrade.</p>
+  </section>
+
+  <section>
+    <h2>What was built</h2>
+    <p><b>1. A confirmed answer to "does it actually feel good?"</b> Until now, <code>groupline</code>'s interactive
+       feel was an article of faith: the pure logic core has 500+ tests, but the thing you touch — tiles, the shake on
+       a wrong guess, the picker board lighting up — lives in a single HTML file that opens from disk, and neither
+       Playwright nor browser-harness can drive a <code>file://</code> origin (that's lessons rule 14). This heartbeat
+       closed that gap by serving the game over <code>http://127.0.0.1:8137</code> and driving the real UI. The verdict:
+       the feel holds up across every state, including a 375&nbsp;px mobile layout, with no errors and no outbound
+       network requests.</p>
+    <p><b>2. The one fix that playtest surfaced — an inline favicon.</b> <code>index.html</code> declared no icon, so
+       every browser auto-requested <code>/favicon.ico</code> and got a 404 (a real console error whenever the game is
+       served — the dev loop, or anyone hosting it locally), and the browser tab had no identity. The fix is a single
+       <code>&lt;link rel="icon"&gt;</code> holding a self-contained <code>data:image/svg+xml</code> icon — a tidy 2×2
+       grid of the game's four difficulty colors (yellow, green, blue, purple). No external URL, no separate file, so
+       <code>groupline</code> stays a single offline-from-disk artifact. The 404 is gone and the tab now carries the
+       game's identity.</p>
+    <p><b>3. Two durable guards so the offline claim can't rot.</b> A new <code>test_core.js</code> <b>§13</b> asserts a
+       favicon is declared <em>and</em> is an inline <code>data:</code> URI, rejecting the http(s), protocol-relative
+       and relative-file forms (with non-vacuous self-checks). The coroner then noticed the icon's SVG namespace shipped
+       as a raw <code>xmlns='http://…'</code> literal — harmless today, but one careless edit away from confusing the
+       offline scanner — and <b>percent-encoded it</b> so the file carries no raw <code>http(s)://</code> in live markup
+       at all, pinned by a new <b>§6c</b> invariant. The game rules and the 15-puzzle pack were not touched.</p>
+  </section>
+
+  <section>
+    <h2>Why</h2>
+    <p>This was directive-driven, straight from Elliot's inbox. The directive, verbatim: <em>"groupline: run a
+       real-browser playtest over a localhost static server (Playwright) to retroactively confirm the interactive feel
+       its v1/polish status assumed (the status-ladder note postdates its graduation); fix any feel problems found, and
+       capture screenshots into that heartbeat's report."</em> It's a fair ask — <code>groupline</code> was promoted to
+       <code>v1</code> and then <code>polish</code> before we had any way to actually watch it being played, so its
+       "genuinely fun to play" claim rested on the logic tests plus a leap of faith. The companion directive seeded six
+       approved pipeline improvements into the evolution backlog; its top item is precisely <em>"game verification runs
+       a localhost static server and drives the game over http://localhost with Playwright"</em> — so confirming
+       groupline's feel this way and making it the standard going forward are the same motion, done once by hand and
+       then encoded into the pipeline.</p>
+  </section>
+
+  <section>
+    <h2>How</h2>
+    <p><b>Driving the real game.</b> I started <code>python3 -m http.server 8137</code> inside the prototype folder and
+       drove the shipped <code>index.html</code> with Playwright. Two practical wrinkles were worth solving cleanly.
+       First, the shared browser profile was locked by a stale session, so instead of fighting it I launched Playwright
+       against an <b>isolated temporary profile</b> (<code>chromium.launchPersistentContext(mktemp, …)</code>) — no
+       conflict, fully self-contained. Second, <code>groupline</code> re-renders its entire <code>#app</code> on every
+       click (<code>innerHTML = …</code>), which detaches any element handle you're holding mid-click; so the script
+       dispatches clicks <em>in the page</em> (re-querying fresh each time), which drives the real event handlers
+       reliably. The script then plays a full win one group at a time (including a deliberate wrong guess to watch the
+       shake and a mistake dot deplete), navigates the picker to a second puzzle and loses it on purpose, exercises
+       Shuffle / Deselect / the under-filled-guess warning / Copy-results, checks a 375&nbsp;px viewport, and records
+       every console message and every network request.</p>
+    <p><b>What it found, and the fix.</b> The play-through was clean — a win, a loss, correct picker colors, a graceful
+       "select 4 tiles" warning, and (nicely) the clipboard even works over localhost so Copy-results shows "Copied!"
+       rather than the file:// fallback textarea. The single blemish was one console error: a <code>404</code> for
+       <code>/favicon.ico</code>. The workflow's builder added the inline data-URI favicon and the §13 guard; the coroner
+       hardened the SVG-namespace detail and added §6c. I then re-ran the exact same playtest against the committed code:
+       the console-error count went from <b>1&nbsp;→&nbsp;0</b>, the server log no longer shows any
+       <code>/favicon.ico</code> request at all, and everything else still plays identically.</p>
+    <p class="kv">Prototype commits (in <code>portfolio/groupline</code>): <code>285d25a</code> inline data-URI favicon +
+       §13 offline-safe guard · <code>11d9b1e</code> document the share-grid feature + enforce it in the docs-vs-code
+       test · <code>cbc144a</code> coroner: percent-encode the favicon SVG namespace + pin the no-raw-scheme invariant
+       (§6c).</p>
+  </section>
+
+  <section>
+    <h2>Seeing it — the real browser, mid-play</h2>
+    <div class="hero">
+      <figure>
+        <img src="assets/2026-07-05T2010-groupline/01-initial-board.png" alt="groupline fresh board over localhost">
+      </figure>
+    </div>
+    <p style="margin-top:12px">Every image below is a real Playwright screenshot from this heartbeat's play-through
+       over <code>http://127.0.0.1:8137</code> — not a mockup.</p>
+    <div class="shots">
+      <figure>
+        <img src="assets/2026-07-05T2010-groupline/06-share-output.png" alt="win state with all groups revealed and Copied confirmation">
+        <figcaption><b>Win.</b> All four groups locked into their difficulty-colored rows, "Solved it! 🎉", and
+          Copy-results confirming "Copied!" — the clipboard works over localhost.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/2026-07-05T2010-groupline/08-loss-reveal.png" alt="loss state, all groups auto-revealed">
+        <figcaption><b>Loss.</b> Four mistakes spent (all dots grey), "Out of guesses.", every remaining group
+          auto-revealed. The picker shows puzzle&nbsp;1 green (won) and puzzle&nbsp;3 as current.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/2026-07-05T2010-groupline/04-wrong-guess.png" alt="wrong guess feedback">
+        <figcaption><b>Wrong guess.</b> One mistake dot depleted and a clear red "Not a group. N mistake(s) left."
+          after the shake — the feedback loop reads instantly.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/2026-07-05T2010-groupline/11-mobile-375.png" alt="mobile 375px layout">
+        <figcaption><b>Mobile (375&nbsp;px).</b> The layout reflows: picker chips regrid to five columns, tiles grow
+          and stay tappable, chip colors (green won / blue lost / dark current) still legible.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>How to run it</h2>
+    <pre><code>cd $FACTORY_ROOT/portfolio/groupline
+./run.sh              # prints the game's path and opens index.html in your browser
+./run.sh --print      # just print the absolute path / file:// URL</code></pre>
+    <p>To reproduce the real-browser playtest exactly (any static server works):</p>
+    <pre><code>cd $FACTORY_ROOT/portfolio/groupline
+python3 -m http.server 8137 --bind 127.0.0.1 &   # then open http://127.0.0.1:8137/index.html</code></pre>
+    <p>The test suite is dependency-free Node — no install, no framework:</p>
+    <pre><code>./run_tests.sh
+# ================================================
+# groupline core tests: 539 passed, 0 failed  (of 539)
+# All green.</code></pre>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <ul>
+      <li><b>Real-browser playtest (the heartbeat session, authoritative).</b> Drove the shipped UI over localhost:
+        full win ("Solved it! 🎉"), full loss ("Out of guesses."), wrong-guess shake + mistake-dot depletion,
+        correct-guess lock-in, picker navigation with correct won/lost/current chip colors, Shuffle, Deselect, the
+        under-filled-guess warning, and Copy-results. <b>0 console/page errors</b> after the fix (was 1: the favicon
+        404), <b>0 external network requests</b>, clean 375&nbsp;px reflow.</li>
+      <li><b>Test suite, re-run live.</b> <code>./run_tests.sh</code> → <b>539 passed, 0 failed</b> (I read the count
+        live; the builder's "546" was pre-coroner and stale). §6b (no fetch/XHR/external host), §6c (no raw scheme
+        literal — both self-checks + the percent-decode positive check), and all §13 favicon assertions pass and are
+        non-vacuous.</li>
+      <li><b>Fix confirmed against committed code.</b> The served <code>index.html</code> carries the inline
+        <code>data:image/svg+xml</code> favicon; a fresh play-through shows the console-error count at 0 and the server
+        log free of any <code>/favicon.ico</code> request.</li>
+      <li><b>Scope honored.</b> <code>core.js</code> and <code>data/puzzles.json</code> are byte-for-byte unchanged
+        (<code>git diff</code> empty) — no game rules or puzzles were touched. Working tree clean at
+        <code>cbc144a</code>. Nothing outside the prototype folder was modified by the product work.</li>
+      <li><b>Bookkeeping checked.</b> The scribe kept <code>groupline</code> at <code>polish</code>, moved the favicon
+        into the description (not lingering as future work — lessons rule 24), and pointed the dashboard card at this
+        report. No repair needed.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What was improved in the factory</h2>
+    <p><b>This run's evolution — games now get a real "playtest" verify lens
+       <span class="pill">pending</span></b>. The adversarial verify fan-out in <code>workflows/heartbeat.js</code> now
+       adds a fourth lens for games only: start a localhost static server, drive the game with an isolated-profile
+       Playwright script (dispatching clicks in-page, since single-file games re-render and detach handles), play a win
+       and a loss, capture screenshots, and assert zero console errors and zero external requests — while the static
+       offline scan stays as the <code>file://</code> guard, and the lens degrades gracefully (pass + a note) if a
+       browser can't be driven. This is item #1 of Elliot's approved pipeline review, and this heartbeat's own
+       groupline playtest is its worked precedent. Apps are unchanged (still three lenses); <code>node --check</code>
+       passed. It's marked <em>pending</em> — the next game heartbeat validates that the lens actually fires.</p>
+    <p><b>Also this heartbeat:</b> the six approved pipeline improvements were seeded to the top of the evolution
+       backlog in priority order, to be worked one per heartbeat from here.</p>
+    <p><b>Previous evolution — validated.</b> The 2026-07-05T18:06 change (<code>9d1b47d</code>: FACTORY.md's status-ladder
+       note that a single-file canvas game's first slice is <code>v0</code> until its feel is browser-confirmed) is
+       marked <b>validated</b>. This heartbeat consumed the note without friction and needed no status repair; better,
+       its adjacent clause — "a canvas game's feel is verified in a real browser" — was exercised head-on by this run's
+       groupline playtest, and chainfall's <code>v0</code> was not re-repaired. The literal new-game assignment path
+       will get its first exercise on the next new-game run, but nothing about it is left uncertain here.</p>
+  </section>
+
+  <section>
+    <h2>Open issues &amp; next step</h2>
+    <p>Nothing blocking — the favicon slice shipped, the 404 is gone, the tab has identity, and the offline invariant is
+       doubly pinned (§13 and §6c, both non-vacuous). One negligible cosmetic note: the head comment explaining the
+       favicon says the file has "no raw http(s):// substring at all," which is true only of the comment-stripped source
+       the scanner sees (the comment itself mentions the real namespace as prose) — not worth a repair commit. The named
+       next steps for <code>groupline</code> (deeper polish) are a visible mistakes/attempts count beyond the dots,
+       difficulty filtering over the per-group tags, or a daily-seed selector layered on the picker. On the factory
+       side, the next heartbeat picks up pipeline-review item #1 from the backlog: the coroner-budget + user-feelable
+       brief-bias change.</p>
+  </section>
+
+  <footer>
+    <a href="../portfolio/dashboard.html">portfolio dashboard</a> · full log: state/ledger.md · this run's factory-repo commit is recorded in the ledger
+  </footer>
+</main>
+</body>
+</html>

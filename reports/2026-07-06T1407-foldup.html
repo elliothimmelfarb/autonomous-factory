@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>foldup — heartbeat 2026-07-06T14:07</title>
+<style>
+  :root {
+    --bg: #0f1115; --surface: #181b22; --border: #2a2f3a;
+    --text: #e8eaf0; --muted: #9aa3b2; --accent: #f5a623; --good: #4cc38a; --warn: #e5484d;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, "Segoe UI", sans-serif; padding: 40px 24px; }
+  main { max-width: 820px; margin: 0 auto; }
+  a { color: var(--accent); text-decoration: none; }
+  .back { font-size: 13px; color: var(--muted); }
+  header { margin: 12px 0 8px; }
+  header h1 { font-size: 26px; letter-spacing: -0.02em; }
+  .meta { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .badge { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); margin-right: 6px; }
+  .badge.ok { color: var(--good); border-color: var(--good); }
+  .badge.v0 { color: var(--accent); border-color: var(--accent); }
+  .badge.mode { color: var(--accent); border-color: var(--accent); }
+  section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-top: 18px; }
+  section h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 10px; }
+  section p, section li { color: var(--text); font-size: 15px; }
+  section p + p { margin-top: 10px; }
+  ul { padding-left: 20px; margin-top: 8px; }
+  li { margin-top: 6px; }
+  pre { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin-top: 10px; color: var(--text); }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .kv { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+  .shots figure { margin: 0; }
+  .shots img { width: 100%; border: 1px solid var(--border); border-radius: 8px; display: block; background: #000; }
+  .shots figcaption { color: var(--muted); font-size: 12px; margin-top: 6px; line-height: 1.4; }
+  .callout { background: #241a12; border: 1px solid var(--accent); border-radius: 10px; padding: 14px 18px; margin-top: 14px; color: var(--text); font-size: 14px; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">← all reports</a>
+  <header>
+    <h1>foldup: a puzzle whose only verb is FOLD</h1>
+    <p class="meta">
+      <span class="badge mode">new · game</span>
+      <span class="badge ok">shipped — 76 tests green, verifiers passed</span>
+      <span class="badge v0">v0 — feel awaits a real-browser playtest</span>
+      · 2026-07-06T14:07:02+01:00 · heartbeat #21 · seventh prototype, third game
+    </p>
+  </header>
+
+  <div class="callout">
+    <b>Context for this run.</b> This heartbeat opened on a host disk that was <b>100% full</b> — the previous
+    (10:06) heartbeat had filled it mid-run and lost its own commit. Once Elliot freed space, this session first
+    reconciled that orphaned 10:06 work (reconstructed its lost report, re-committed it), then ran a fresh
+    <b>new-mode</b> heartbeat, which produced <code>foldup</code>. The evolution below is a direct guard against
+    that disk failure recurring.
+  </div>
+
+  <section>
+    <h2>What was built</h2>
+    <p><code>foldup</code> is the portfolio's seventh prototype and its third game — a single-file HTML-canvas puzzle
+      whose <b>only verb is FOLD</b>. You crease the whole board along any horizontal or vertical grid line; the
+      smaller half folds over onto the larger half, and every overlapping pair of cells combines by <b>XOR</b> — a
+      lit cell landing on empty stays lit, a lit cell landing on another lit cell <i>cancels both</i>. The board
+      strictly <b>shrinks</b> with every fold. Each level, you fold down to match a <b>target pattern</b> in as few
+      folds as <b>par</b>. The wow is the merge/collapse moment: two halves line up, cells cancel or light, and the
+      playfield collapses onto the target — the paper-folding gesture made literal. It opens straight from disk at
+      <code>file://</code>: one HTML file, no server, no build, no install, no network, no ads.</p>
+    <p>The architecture is a pure DOM-free logic <b>core</b> under a thin canvas/click <b>shell</b>.
+      <code>core.js</code> holds every rule and is 100% unit-tested: <code>combine(a,b)</code> (the XOR overlap rule),
+      <code>fold(grid, axis, index)</code> (reflects the smaller half across the crease, XOR-combines overlaps,
+      returns a <i>new</i> shrunk grid — never mutates), <code>checkWin(grid, target)</code>, and
+      <code>solveMinFolds(start, target)</code> — a <b>BFS par oracle</b> that proves the tagged par is the true
+      minimum for every level. The certified level bank <code>LEVELS</code> is <b>8 hand-authored, BFS-certified
+      levels</b> in a difficulty ramp: two 1-fold tutorials that isolate the two merge outcomes, then 1-, 2-, and
+      3-fold puzzles on larger boards. <code>ui.js</code> is the thin shell — it renders the grid and target, draws
+      hover-highlighted clickable crease gutters, runs a flip animation on a gutter click, and draws the
+      folds-vs-par HUD and win overlay (<b>R</b> restarts, <b>N</b> advances after a win). <code>build.js</code>
+      inlines <code>core.js</code> + <code>ui.js</code> + a percent-encoded SVG favicon into the shipped
+      <code>foldup.html</code>, byte-pinned to source by a test.</p>
+  </section>
+
+  <section>
+    <h2>The game, rendered in a browser this run</h2>
+    <div class="shots">
+      <figure>
+        <img src="assets/2026-07-06T1407/foldup-01-fresh-level1.png" alt="foldup Level 1 fresh: a 2x2 board with one lit cell, target on the right">
+        <figcaption>Level 1/8 "First Fold", fresh — a 2×2 board, one lit cell, the target panel on the right, crease gutters between rows/columns. Par 1.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/2026-07-06T1407/foldup-02-win-level1.png" alt="foldup win overlay: Solved in par! First Fold, 1 fold, Next level / Replay">
+        <figcaption>The win overlay after a single fold: <b>"Solved in par! · 1 fold"</b> with <b>Next level →</b> and <b>Replay</b> — the game-facing shell (HUD, overlay, controls) rendering live.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/2026-07-06T1407/foldup-05-level5-midfold.png" alt="foldup Level 5 Corner Fold mid-solve, board shrunk to 3x5 with one lit cell">
+        <figcaption>Level 5/8 "Corner Fold", mid-solve (Folds 1/Par 2): the board has already <b>shrunk</b> after one fold; the 3×3 target sits to the right.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/2026-07-06T1407/foldup-07-mobile-375.png" alt="foldup at 375px mobile width">
+        <figcaption>The same game at a <b>375&nbsp;px mobile</b> viewport — the board, target, HUD, and how-to-play all reflow and stay legible.</figcaption>
+      </figure>
+    </div>
+    <p class="kv">These are real renders of the shipped <code>foldup.html</code> across fresh / win / mid-fold / mobile
+      states. They confirm the shell renders correctly — but the <b>live interactive feel</b> (flip-animation timing,
+      gutter-click legibility in motion) was not certified by an automated interactive drive this run, which is the
+      v0→v1 gate (see Verification).</p>
+  </section>
+
+  <section>
+    <h2>Why this idea</h2>
+    <p>New-mode game round. Ideation generated <b>12 concepts</b> around one seed — mine an unclaimed, universally
+      familiar <i>physical gesture</i> as a puzzle's core verb (the game-round twin of the earlier app-round
+      "transplant a beloved mechanic"). Validation then did real web research on the shortlist and graded three:</p>
+    <ul>
+      <li><b>Foldup — strong, wow survives (picked).</b> Novelty held up: paper-folding puzzle games exist (Unflip,
+        Paperama, Daily Unfold) but they fold a <i>picture/shape</i> in space — none use fold as a <b>logic-combining
+        XOR verb over a lit-cell grid with a certified minimum-fold par</b>. That reframing is the wedge.</li>
+      <li><b>Overunder — weak, wow does NOT survive (killed).</b> The idea was to switch a crossing over/under to
+        untangle a knot — but switching a crossing is <b>topologically invariant on loop-count</b> (arXiv 1908.04073),
+        so its stated win condition is a no-op against its own verb. A crisp example of the game-round failure mode:
+        the <i>desire</i> is real but the <i>mechanic</i> doesn't actually move the win state. Verifying that the win
+        is sensitive to the verb became a banked ideation lesson.</li>
+      <li><b>Proofgrid — strong but novelty crowded.</b> The strongest unbuilt sibling (certified-content Nonogram-like
+        puzzles), logged for a future round rather than built.</li>
+    </ul>
+    <p>Foldup was the only candidate whose wow <i>and</i> novelty both survived, and whose logic core is fully
+      unit-testable while its feel lives in a small canvas — the exact shape the mission prizes for a game.</p>
+  </section>
+
+  <section>
+    <h2>How it was built — and the bug the coroner caught</h2>
+    <p>The design dossier (committed with the build) worked out the load-bearing math and risks: the fold as a
+      half-plane reflection with the overhang index formula (<code>dest = 2*index - 1 - j</code>), the
+      <b>parity-trivialization risk</b> (a 1×1 target trivializes any level regardless of the solver, so level specs
+      reject 1×1 targets), and the BFS par oracle — which is tractable precisely because the board <i>shrinks</i>
+      every fold, and which in fact <b>caught two wrong hand-authored pars</b> during authoring. Certification earns
+      its keep here by catching authoring drift, not just stamping a badge.</p>
+    <p>The coroner's headline fix was a <b>crease-intersection tie-break bug</b> at the pointer seam. At the exact
+      point where a vertical and a horizontal crease cross, <code>vDist == hDist</code>, and <code>creaseAt</code>'s
+      <code>vDist &lt;= hDist</code> test silently picked the vertical axis — so a click intended as a horizontal fold
+      became a silent <b>wrong</b> fold that could dead-end a level (worst on 2-wide/2-tall boards where the two axes'
+      targets maximally collide). <code>creaseAt</code> now <b>refuses</b> the genuinely-ambiguous tie
+      (<code>|vDist − hDist| ≤ 3px</code>) as a harmless no-op: a click even slightly off the crossing resolves to the
+      strictly-nearer axis, and a dead-center click is a no-op the player's next tiny move corrects — a no-op beats a
+      silent wrong action. The compounding trap the coroner also fixed: the <i>test harness's</i> own probe helper
+      aimed at the board center, which on a 2×2 sits exactly on the crossing and couldn't drive a horizontal fold at
+      all — a false-test-result hazard. Two smaller fixes rode along: the dead-end banner now clears on restart, and
+      <code>build.js</code> reports <code>Buffer.byteLength</code> (matching <code>wc -c</code>) instead of
+      UTF-16 code units. The durable check is <code>test_core.js</code> §16, with a non-vacuous self-check (strip the
+      guard + restore the naive centered helper → the horizontal click folds the wrong axis again). This was harvested
+      into <b>lessons rule 28</b> — "a nearest-distance hit-test between two intersecting targets mis-resolves at the
+      tie, and a center-aiming test helper masks it."</p>
+    <p class="kv">Commits (foldup repo): <code>daec534</code> (v0 first slice) → <code>76afce2</code> (coroner: refuse ambiguous crease-crossing clicks; stale-banner + byte-label fixes)</p>
+  </section>
+
+  <section>
+    <h2>How to run it</h2>
+    <pre><code>cd portfolio/foldup
+./run.sh --print          # prints the absolute path + file:// URL
+open foldup.html          # single offline HTML file — no server, no build</code></pre>
+    <p>The test suite, re-run from a cold start by the verifying session (<code>run_tests.sh</code> builds then tests):</p>
+    <pre><code>$ ./run_tests.sh
+built foldup.html (42075 bytes)
+
+  All 76 tests passed.</code></pre>
+    <p>The build is byte-pinned: <code>build.js</code> re-inlines the core and produces <code>foldup.html</code> at
+      exactly <b>42075 bytes</b> (<code>wc -c</code> confirms), and §12 asserts the inlined core stays byte-identical
+      to source, so the shipped artifact can never silently drift from the tested source.</p>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <ul>
+      <li><b>Tests, re-run live:</b> 76 passed (I read the count from the runner myself; the pre-coroner builder
+        summary's "73" was stale — the coroner's §16 added three). §7 confirms, for <i>every</i> level, that the known
+        solution reaches the target in exactly par folds AND that <code>solveMinFolds</code> proves par is the true
+        minimum — so a level's par can never silently drift from its content and a wrong sequence provably does not win.</li>
+      <li><b>Static &amp; seam invariants:</b> offline-from-disk scan (rule 14), dead-function scan (rule 21), and
+        charset check all pass; the pointer-seam NaN/Infinity crease-index regression (rule 25) and the deferred-render
+        double-fold regression (rule 13) each carry a non-vacuous self-check; §16 (crease-crossing) is present and
+        non-vacuous.</li>
+      <li><b>Rendered in a browser:</b> the game was loaded and captured across fresh / win-in-par / mid-fold / larger-level
+        / dead-end / mobile-375 states (screenshots above and in <code>reports/assets/2026-07-06T1407/</code>), confirming
+        the shell (HUD, target panel, win overlay, next/replay) renders correctly.</li>
+      <li><b>Why v0, not v1:</b> per FACTORY.md's status-ladder note, a single-file-canvas game ships v0 until its
+        interactive <i>feel</i> is confirmed in a real browser. That confirmation — the flip-animation timing and
+        gutter-click legibility driven live — was blocked this heartbeat only by Chrome remote-debugging not being
+        authorized (and Playwright/browser-harness both block the <code>file://</code> origin), not by any product
+        defect. Same precedent as <code>groupline</code> and <code>chainfall</code>. Confirming the feel in a real
+        browser is the single v0→v1 gate.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What was improved in the factory</h2>
+    <p><b>This run's evolution — a pre-launch disk-headroom guard.</b> FACTORY.md's concurrency-guard section and the
+      <code>factory-heartbeat</code> skill now tell the heartbeat session to run <code>df -h</code> before launching
+      the workflow and, if free space is below ~2&nbsp;GB, to <b>DEFER</b> (write a "host disk low" ledger entry naming
+      the free space and likely hogs, flag it, remove the lock, end) rather than launch a workflow that could exhaust
+      the disk mid-run and lose its commit. It explicitly forbids deleting anything outside the factory tree to make
+      room (a Hard-constraint boundary — Elliot's call). This is the direct lesson of this run: the host was 100% full
+      at start (every Bash call died at <code>mkdir …/session-env → ENOSPC</code>), and the prior 10:06 run had filled
+      the disk <i>during</i> execution and lost its factory commit, orphaning meta-work this session had to reconcile.
+      A one-command check turns that class of failure into a clean, recorded early deferral. Status: <b>pending</b> —
+      validated when a future heartbeat either defers correctly on a low-disk volume or (the common case) sees ample
+      space and proceeds with no friction. Chosen over the also-real ledger-read-overflow friction (the ledger is now
+      21 entries and overflowed the read-tool limit twice this session — the "ledger rollup" backlog item, now bumped
+      in priority) because the disk guard prevents a <i>commit-losing</i> failure and is strictly smaller.</p>
+    <p><b>Previous evolution — validated.</b> The 2026-07-06T08:06 change (making the new-mode <code>VALIDATION</code>
+      schema's two large free-text fields <code>prior_art</code>/<code>resonance_evidence</code> optional, so a
+      payload-size XML mangle can't burn the retry cap and silently drop a candidate) was validated head-on by this
+      new-mode run: three game candidates validated cleanly with full verdicts, a transcript scan across all 17 agents
+      found <b>zero</b> "required property" failures on those two fields (the only such retries were on an unrelated
+      build/verify agent's command fields), both optional fields still arrived populated, and the selector's
+      strong/weak choice was unaffected (Foldup picked, Overunder killed, Proofgrid passed). Not reverted.</p>
+  </section>
+
+  <section>
+    <h2>Open issues &amp; next step</h2>
+    <p>Nothing blocks the v0 ship: the first slice runs end-to-end from a cold start, the pure core is 100% tested with
+      a BFS-certified level bank, the artifact is byte-pinned, and every pre-coroner concern was resolved in
+      <code>76afce2</code> and does not reproduce. The one open item is the <b>v0→v1 gate</b>: a real-browser playtest
+      at <code>file://</code> to confirm the fold feel (flip animation, gutter-click legibility, the merge/collapse
+      wow) and the live game-facing shell. After that: a level-select / next-level flow and a few more levels in the
+      difficulty ramp.</p>
+  </section>
+
+  <footer>
+    <a href="../portfolio/dashboard.html">portfolio dashboard</a> · full log: state/ledger.md · factory repo commit: this heartbeat's commit (see git log)
+  </footer>
+</main>
+</body>
+</html>

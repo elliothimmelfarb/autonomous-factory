@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>chainfall — heartbeat 2026-07-05T2206</title>
+<style>
+  :root {
+    --bg: #0f1115; --surface: #181b22; --border: #2a2f3a;
+    --text: #e8eaf0; --muted: #9aa3b2; --accent: #f5a623; --good: #4cc38a; --warn: #e5484d;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, "Segoe UI", sans-serif; padding: 40px 24px; }
+  main { max-width: 780px; margin: 0 auto; }
+  a { color: var(--accent); text-decoration: none; }
+  .back { font-size: 13px; color: var(--muted); }
+  header { margin: 12px 0 8px; }
+  header h1 { font-size: 26px; letter-spacing: -0.02em; }
+  .meta { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .badge { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); margin-right: 6px; }
+  .badge.ok { color: var(--good); border-color: var(--good); }
+  .badge.blocked { color: var(--warn); border-color: var(--warn); }
+  .badge.mode { color: var(--accent); border-color: var(--accent); }
+  .badge.salvage { color: #d08bff; border-color: #d08bff; }
+  section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-top: 18px; }
+  section h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 10px; }
+  section p, section li { color: var(--text); font-size: 15px; }
+  section p + p { margin-top: 10px; }
+  ul { padding-left: 20px; margin-top: 8px; }
+  li { margin-top: 6px; }
+  pre { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin-top: 10px; color: var(--text); }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .kv { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 13px; }
+  .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 12px; }
+  .shots figure { margin: 0; }
+  .shots img { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 8px; display: block; }
+  .shots figcaption { color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+  .shots .full { grid-column: 1 / -1; }
+  mark { background: rgba(224,72,77,0.22); color: #ffb4b6; padding: 0 3px; border-radius: 3px; }
+  .good-text { color: var(--good); }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">← all reports</a>
+  <header>
+    <h1>chainfall: the cascade you can finally watch — graduated to v1</h1>
+    <p class="meta">
+      <span class="badge mode">improve</span>
+      <span class="badge ok">shipped — v0 → v1</span>
+      <span class="badge salvage">salvaged: verifier ran away</span>
+      · 2026-07-05T22:06:41+01:00 · heartbeat #15
+    </p>
+  </header>
+
+  <section>
+    <h2>What was built</h2>
+    <p><strong>chainfall graduated from v0 to v1.</strong> At v0 the Drop7 cascade was correct but <em>invisible</em>: you dropped a disc and the board teleported straight to its resolved state, throwing away the single most satisfying second of the game. At v1 the cascade is a <strong>visible, stepped animation</strong>. The pure core's <code>resolveBoard</code> now exposes an <em>additive</em> per-step frame list — each frame is <code>{before, mask, after, points, cleared, revealed}</code> — that <code>playDrop</code> threads into <code>state.lastResolve</code>, and the HTML shell plays it back on the canvas: clearing cells flash and pulse, survivors settle under gravity, the <strong>Score HUD ticks up per step</strong>, and a “Chain ×N +pts” readout escalates as the chain deepens.</p>
+    <p>The <strong>game-facing shell</strong> landed alongside it: an on-canvas <strong>HUD</strong> (Score · Next disc · Drops-to-floor · Drops), a <strong>Game-over overlay</strong> showing the final score with a <strong>Play again</strong> button, and <kbd>R</kbd> to restart at any time. The files that matter: <code>core.js</code> (the pure, DOM-free rules — now emitting the animation frames), <code>chainfall.html</code> (the thin canvas shell that plays them back and owns the HUD/overlay), and <code>test_core.js</code> (the dependency-free Node suite, now <strong>225 tests</strong>, up from 160 at v0). chainfall is the last prototype to reach v1 — <strong>the whole portfolio is now ≥ v1</strong>.</p>
+  </section>
+
+  <section>
+    <h2>Why this was the step</h2>
+    <p>chainfall's v0 next-step was explicitly “graduate to v1: real-browser feel pass, on-canvas HUD, game-over/restart overlay.” It was the only prototype below v1 — the clear improve target (below-v1 beats round-robin polish), and no new prototype was due by the ~1-in-3 cadence (the last <code>new</code> run, chainfall's own v0, was only two heartbeats earlier). For a cascade puzzle, the <em>feel of the chain reaction is the entire product</em>; a correct-but-instant board is a tech demo, not a game. The design dossier put it bluntly: “a board that teleports to its resolved state throws away the single most satisfying second of the game.” Making that second visible was the highest-leverage work available.</p>
+  </section>
+
+  <section>
+    <h2>How</h2>
+    <p>The build kept the pure core honest: rather than move animation logic into the shell, it made the core <em>emit</em> the animation as data. <code>resolveBoard</code> gained a purely additive <code>steps</code> field (every pre-existing return value unchanged in name, order, and value), so the animation is <strong>unit-testable without a browser</strong> — the frames chain (<code>steps[i].after</code> deep-equals <code>steps[i+1].before</code>), are independent clones, and are <code>[]</code> for a no-clear drop. The shell plays them back with <code>requestAnimationFrame</code> + a tunable per-step <code>STEP_MS</code>, compressing the real Drop7-clone ~1.1s-per-step budget by roughly 4–6× for a snappy web feel — a number that came straight from the dossier.</p>
+    <p>Animating a synchronous mutation opened a new hazard the v0 never had, so <strong>lessons rule 13 now applies</strong>: a drop commits <code>state</code> instantly but the frames render over the next few hundred ms, so a second drop fired mid-cascade would land on a stale board or double-apply. The guard: an <code>animating</code> in-flight flag plus a <em>visible</em> input freeze at every drop/aim entry point (<kbd>R</kbd> stays live), pinned by a fake-DOM regression test with a strip-the-guard self-check.</p>
+    <p><strong>The bug the playtest caught.</strong> The real-browser playtest surfaced a defect no unit test could: <code>chainfall.html</code> shipped non-ASCII text — em/en dashes and the arrows in the HUD (“Drops&nbsp;→&nbsp;floor”) and key hints (← → ↓) — with <mark>no <code>&lt;meta charset="utf-8"&gt;</code></mark>. Served or opened without a declared charset, the browser fell back to Latin-1 and rendered <strong>mojibake</strong> (see the screenshots below). For a game whose headline promise is “opens straight from disk,” where the encoding guess is <em>least</em> reliable, that would have shipped ugly. The fix: add <code>&lt;meta charset="utf-8"&gt;</code> as the first line of the head (ahead of the em-dash in <code>&lt;title&gt;</code>), plus a new <strong>static charset invariant</strong> (test §8b): if the shipped HTML carries any non-ASCII byte it must declare utf-8 within the first 1KB — with non-vacuous self-checks (flags a missing meta, flags a meta pushed past 1KB, passes an early meta and pure-ASCII). The same <code>charsetViolation</code> scan was added to the shared <code>templates/game-html</code> invariants so <strong>every future single-file game inherits the guard</strong>.</p>
+    <p class="kv">Commits (chainfall repo): <code>92cc221</code> — chainfall v1: animated cascade + HUD + game-over/restart, charset-fixed (built on v0's <code>4e3ec95</code> first slice and <code>c3df2a4</code> NaN-column fix).</p>
+  </section>
+
+  <section>
+    <h2>See it — before &amp; after the charset fix</h2>
+    <div class="shots">
+      <figure>
+        <img src="assets/chainfall-v1/01-fresh-board.png" alt="chainfall fresh board with mojibake in the tagline and HUD">
+        <figcaption><strong>Before.</strong> The playtest's fresh-board capture — note the garbled text: <mark>“score big â€&quot; survive”</mark> and the HUD reading <mark>“DROPS Â†' FLOOR”</mark>. Classic UTF-8-decoded-as-Latin-1 mojibake from the missing charset.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/chainfall-v1/04-charset-fixed.png" alt="chainfall fresh board rendering correctly after the charset fix">
+        <figcaption><strong>After.</strong> Same page after adding <code>&lt;meta charset="utf-8"&gt;</code>: <span class="good-text">“score big — survive”</span>, the HUD reads <span class="good-text">“DROPS → FLOOR”</span>, and the key hints show “1 – 7 / ← → to aim and Space / ↓ to drop.” Verified live: <code>document.characterSet === "UTF-8"</code>, zero mojibake markers.</figcaption>
+      </figure>
+      <figure class="full">
+        <img src="assets/chainfall-v1/02-cascade-flash.png" alt="chainfall mid-cascade, cells flashing as they clear">
+        <figcaption>Mid-cascade: the stepped animation flashing clearing cells — the “satisfying second” the v1 slice exists to make visible. (Captured by the playtest before the fix, so the tagline still shows the pre-fix mojibake.)</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>How to run it</h2>
+    <pre><code>cd $FACTORY_ROOT/portfolio/chainfall
+./run.sh            # prints the game's path and opens chainfall.html in your browser
+./run.sh --print    # only print the absolute path (don't open)</code></pre>
+    <p>Cold-start from a foreign directory works (the wrapper resolves its own dir):</p>
+    <pre><code>$ cd /tmp &amp;&amp; $FACTORY_ROOT/portfolio/chainfall/run.sh --print
+chainfall is a single offline HTML file. Open it directly in a browser:
+
+  $FACTORY_ROOT/portfolio/chainfall/chainfall.html</code></pre>
+    <pre><code>$ ./run_tests.sh
+====================================================
+chainfall core tests: 225 passed, 0 failed  (of 225)
+All green.</code></pre>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <ul>
+      <li><strong>Tests (correctness):</strong> <code>./run_tests.sh</code> from a cold start → <strong>225 passed, 0 failed</strong> (count read live from the runner, not the builder summary). New sections cover the additive <code>steps</code> frames, the rising-floor &amp; game-over path, <code>playDrop</code> threading <code>steps</code>, the rule-13 input-freeze during the cascade, and the new §8b charset invariant.</li>
+      <li><strong>Real-browser playtest (feel):</strong> the game was served on localhost and driven with Playwright — it renders the board + HUD, discs drop, cascades fire, and the shell is intact. This is what produced the screenshots above and, critically, <em>caught the charset defect</em>.</li>
+      <li><strong>Charset fix confirmed in-browser:</strong> after the fix, a fresh Playwright load reported <code>document.characterSet = "UTF-8"</code> (was defaulting to Latin-1), the tagline/HUD/key-hint dashes and arrows render correctly, and a mojibake-marker scan of the rendered body found <strong>none</strong>. The only remaining console line is a benign <code>/favicon.ico</code> 404 (deferred — see below).</li>
+      <li><strong>Static invariants:</strong> the shipped artifact passes all three — offline-from-disk (rule 14), no-dead-code (rule 21), and the new charset scan — each with non-vacuous self-checks; the template's <code>charsetViolation</code> self-check also passes.</li>
+    </ul>
+    <p><strong>Salvage note — an honest account.</strong> This heartbeat's workflow did not finish on its own. The build and dossier agents completed cleanly by ~22:15, but the real-browser <em>playtest verifier</em> then over-invested catastrophically: it spent <strong>~2¾ hours</strong> fighting a genuine headless-Chromium limitation — <code>requestAnimationFrame</code> never fires without vsync, and Playwright throttles background timers between actions, so a multi-frame cascade simply cannot be captured by “wait then screenshot.” It diagnosed this correctly and even wrote “I have sufficient evidence already,” then kept trying fake-clock and manual-timer-pump workarounds anyway, and eventually hung (a machine sleep mid-run wedged the browser session further). The heartbeat session detected the runaway, <strong>refreshed the concurrency lock</strong> so a scheduled sibling couldn't reclaim it and clobber the shared files, <strong>stopped the workflow</strong>, reaped the orphaned browser/server processes, and completed the back half — verify, the charset coroner fix, scribe, wiki ingest, evolution, and this report — by hand. The build itself was sound; only the capture loop failed.</p>
+  </section>
+
+  <section>
+    <h2>What was improved in the factory</h2>
+    <p><strong>This run's evolution — the playtest lens gets an animation-capture reality note + a hard stop-budget</strong> (<code>workflows/heartbeat.js</code>). The 2¾-hour sink above is exactly the friction the Evolution step exists to kill, so the game “playtest” verify lens now tells the verifier up front that headless browsers can't advance a <code>requestAnimationFrame</code> animation (no vsync; timers throttled between calls), that it must <em>not</em> attempt deterministic frame-by-frame capture (“this exact rabbit hole has sunk &gt;2 hours of a single heartbeat”), and that it should capture one representative frame and lean on the unit-tested per-step frames instead. It adds a <strong>BUDGET / HARD STOP</strong>: the moment the verifier has a few distinct-state screenshots and the zero-error/zero-external-request assertions, it is done — stop, don't polish. It also folds in a one-line mojibake eyeball harvested from this run's coroner fix. Prompt-only, additive, <code>node --check</code> clean. <em>Status: pending</em> (the next game heartbeat validates that the playtest now completes in bounded time).</p>
+    <p><strong>Previous evolutions validated this run.</strong> Three pending entries were exercised and marked <span class="good-text">validated</span>: (1) the <em>real-browser playtest lens</em> itself — it ran exactly as designed and delivered real value (its fresh-board shot surfaced the charset bug), validated with the follow-on budget fix rather than reverted; (2) the <em>concurrency guard</em> — the session claimed the lock at startup and, when the run went long, applied the guard's staleness logic in reverse by refreshing the lock to prevent a sibling from clobbering mid-salvage; (3) the <em>Elliot-directed pipeline build-out</em> — the Dossier phase landed a dossier the builder demonstrably consumed, the Ingest intent was fulfilled (wiki index + log touched, a new concept page created), and the coroner budget was honored (one fix → one durable check).</p>
+  </section>
+
+  <section>
+    <h2>Open issues &amp; next step</h2>
+    <p><strong>Nothing blocking</strong> — v1 ships: the animated cascade, the HUD, and the game-over/restart overlay are all present, the feel was confirmed in a real browser, and the charset defect is fixed and guarded. Deferred to the next polish pass (now chainfall's next-step): <strong>best-score memory</strong> (persist a high score across sessions via <code>localStorage</code> — the one v0-next-step item cut this heartbeat, a reasonable scope call since the v1 bar for a canvas game is feel + HUD + game-over/restart, all met); an <strong>inline <code>data:</code> URI favicon</strong> to kill the <code>/favicon.ico</code> 404 and give the tab an identity (deferred rather than rushed because doing it safely pulls in the rule-14 corollary — percent-encode the SVG namespace so no raw scheme literal ships); and a <strong>rising-floor danger warning</strong> as the stack nears the top.</p>
+  </section>
+
+  <footer>
+    <a href="../portfolio/dashboard.html">portfolio dashboard</a> · full log: state/ledger.md · factory repo commit: see git log (this heartbeat's meta commit)
+  </footer>
+</main>
+</body>
+</html>

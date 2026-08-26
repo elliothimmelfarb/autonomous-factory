@@ -1,0 +1,133 @@
+{
+  "screenshots": [
+    {
+      "name": "01-initial-board.png",
+      "note": "Fresh board, puzzle 1 (Warm-up), 16 shuffled tiles, mistakes full, picker visible."
+    },
+    {
+      "name": "02-four-selected.png",
+      "note": "Four tiles selected (dark) before submitting the first group: SHADES OF RED."
+    },
+    {
+      "name": "03-first-group-solved.png",
+      "note": "First group locked into a colored solved row; feedback confirms it."
+    },
+    {
+      "name": "04-wrong-guess.png",
+      "note": "A wrong guess: one mistake dot depleted, red \"Not a group\" feedback after the shake."
+    },
+    {
+      "name": "05-win.png",
+      "note": "Win state: all four groups revealed as colored rows, \"Solved it!\" verdict, end controls."
+    },
+    {
+      "name": "06-share-output.png",
+      "note": "Copy-results output: emoji result grid (clipboard or manual-copy fallback under http)."
+    },
+    {
+      "name": "07-picker-jump.png",
+      "note": "Jumped to puzzle 3 via the picker board; chip 1 shows green (won), chip 3 dark (current)."
+    },
+    {
+      "name": "08-loss-reveal.png",
+      "note": "Loss state: out of guesses, every remaining group auto-revealed, \"Out of guesses\" verdict."
+    },
+    {
+      "name": "09-picker-mixed.png",
+      "note": "Picker board with mixed session statuses: green won, blue lost, dark current, grey unplayed."
+    },
+    {
+      "name": "10-underfilled-warn.png",
+      "note": "Submitting with fewer than four selected shows a clear warning, no crash."
+    },
+    {
+      "name": "11-mobile-375.png",
+      "note": "Mobile viewport (375px): layout reflows, chips regrid to 5 columns, tiles stay tappable."
+    }
+  ],
+  "events": [
+    {
+      "step": "solve group 1",
+      "label": "SHADES OF RED",
+      "feedback": "Correct — SHADES OF RED!",
+      "solved": 1
+    },
+    {
+      "step": "deliberate wrong guess",
+      "feedback": "Not a group. 3 mistake(s) left.",
+      "usedDots": 1
+    },
+    {
+      "step": "after solving all groups",
+      "over": true,
+      "verdict": "Solved it! 🎉"
+    },
+    {
+      "step": "copy results",
+      "shareNote": "Copied! Paste it anywhere.",
+      "hasFallbackTextarea": false,
+      "shareGridSample": ""
+    },
+    {
+      "step": "jumped via picker to chip 3",
+      "nowPuzzle": 3,
+      "title": "Board Games"
+    },
+    {
+      "step": "forced loss",
+      "over": true,
+      "verdict": "Out of guesses.",
+      "usedDots": 4,
+      "solved": 4
+    },
+    {
+      "step": "picker mixed statuses",
+      "chips": [
+        {
+          "n": "1",
+          "cls": "chip won"
+        },
+        {
+          "n": "2",
+          "cls": "chip unplayed"
+        },
+        {
+          "n": "3",
+          "cls": "chip lost"
+        },
+        {
+          "n": "4",
+          "cls": "chip current"
+        },
+        {
+          "n": "5",
+          "cls": "chip unplayed"
+        },
+        {
+          "n": "6",
+          "cls": "chip unplayed"
+        }
+      ]
+    },
+    {
+      "step": "shuffle",
+      "changedOrder": true
+    },
+    {
+      "step": "deselect",
+      "selectedBefore": 2,
+      "selectedAfter": 0
+    },
+    {
+      "step": "under-filled submit",
+      "feedback": "Select 4 tiles before submitting (1 selected)."
+    }
+  ],
+  "consoleErrors": [],
+  "externalRequests": [],
+  "notes": [
+    "pack version 2, 15 puzzles",
+    "console errors: 0",
+    "external (non-localhost) requests: 0"
+  ]
+}

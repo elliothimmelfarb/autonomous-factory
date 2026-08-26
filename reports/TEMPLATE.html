@@ -1,0 +1,110 @@
+<!doctype html>
+<!-- HEARTBEAT REPORT TEMPLATE
+     Copy to reports/<YYYY-MM-DDTHHmm>-<prototype>.html and replace every {{placeholder}}.
+     Audience: Elliot, reading with coffee. Full sentences, no agent shorthand, no unexplained
+     jargon. Be generous with detail — this is the deep-dive companion to the dashboard card.
+     Real commands and REAL observed output in the run section, not hypotheticals.
+     Then prepend a row to reports/index.html (row template is in a comment there). -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{prototype}} — heartbeat {{timestamp}}</title>
+<style>
+  :root {
+    --bg: #0f1115; --surface: #181b22; --border: #2a2f3a;
+    --text: #e8eaf0; --muted: #9aa3b2; --accent: #f5a623; --good: #4cc38a; --warn: #e5484d;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, "Segoe UI", sans-serif; padding: 40px 24px; }
+  main { max-width: 780px; margin: 0 auto; }
+  a { color: var(--accent); text-decoration: none; }
+  .back { font-size: 13px; color: var(--muted); }
+  header { margin: 12px 0 8px; }
+  header h1 { font-size: 26px; letter-spacing: -0.02em; }
+  .meta { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .badge { display: inline-block; font-size: 12px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); margin-right: 6px; }
+  .badge.ok { color: var(--good); border-color: var(--good); }
+  .badge.blocked { color: var(--warn); border-color: var(--warn); }
+  .badge.mode { color: var(--accent); border-color: var(--accent); }
+  section { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-top: 18px; }
+  section h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 10px; }
+  section p, section li { color: var(--text); font-size: 15px; }
+  section p + p { margin-top: 10px; }
+  ul { padding-left: 20px; margin-top: 8px; }
+  li { margin-top: 6px; }
+  pre { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.5; margin-top: 10px; color: var(--text); }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .kv { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  footer { margin-top: 28px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">← all reports</a>
+  <header>
+    <h1>{{prototype}}: {{brief title}}</h1>
+    <p class="meta">
+      <span class="badge mode">{{new|improve}}</span>
+      <span class="badge ok">shipped — all verifiers passed</span> <!-- or class="badge blocked" with the blocking issues -->
+      · {{ISO timestamp}} · heartbeat #{{n}}
+    </p>
+  </header>
+
+  <section>
+    <h2>What was built</h2>
+    <p>{{Plain-English description of the deliverable: what exists now that didn't this morning.
+        For a new prototype: what it is and does end-to-end. For an improve run: the feature/fix
+        and how it changes what the tool can do. Name the files that matter and what each is for.}}</p>
+  </section>
+
+  <section>
+    <h2>Why</h2>
+    <p>{{The problem, and who has it. New mode: cite the actual research evidence — where on the
+        web people complain about this, what existing tools get wrong, why this gap. Improve mode:
+        why THIS was the highest-leverage next step (or quote the directive that asked for it).}}</p>
+  </section>
+
+  <section>
+    <h2>How</h2>
+    <p>{{The approach and the key decisions: architecture in a paragraph, trade-offs made,
+        anything clever or unusual. Include bugs discovered during the build and how they were
+        fixed — that story is often the most interesting part. End with the commits.}}</p>
+    <p class="kv">Commits: {{hashes + one-line descriptions, in the prototype repo}}</p>
+  </section>
+
+  <section>
+    <h2>How to run it</h2>
+    <pre><code>{{cold-start command(s), copy-pasteable, starting with cd}}</code></pre>
+    <p>{{What the user will see — paste a short REAL output excerpt from this run:}}</p>
+    <pre><code>{{actual observed output excerpt}}</code></pre>
+    <pre><code>{{test command}}   # {{N}} tests, all passing</code></pre>
+  </section>
+
+  <section>
+    <h2>Verification</h2>
+    <ul>
+      <li>{{One bullet per verifier lens: what it tried, what it found, verdict.}}</li>
+      <li>{{Edge cases exercised beyond the test suite.}}</li>
+      <li>{{If a fix round happened: what blocked, what the fixer changed, re-verify result.}}</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What was improved in the factory</h2>
+    <p>{{This run's evolution: the change, the friction/proposal behind it, commit hash, status
+        (pending until next run validates it).}}</p>
+    <p>{{Previous evolution's validation outcome: validated or reverted, and why.}}</p>
+  </section>
+
+  <section>
+    <h2>Open issues &amp; next step</h2>
+    <p>{{Anything unresolved, and the likely next heartbeat's work on this prototype.}}</p>
+  </section>
+
+  <footer>
+    <a href="../portfolio/dashboard.html">portfolio dashboard</a> · full log: state/ledger.md · factory repo commit: {{hash}}
+  </footer>
+</main>
+</body>
+</html>
