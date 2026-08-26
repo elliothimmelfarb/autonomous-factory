@@ -1,0 +1,5 @@
+portfolio/
+state/*.lock
+state/heartbeat.lock
+state/ideas.md
+.DS_Store
